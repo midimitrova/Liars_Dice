@@ -15,10 +15,10 @@ class Player:
 
     @name.setter
     def name(self, value):
-        if value == '' or value.isdigit():
-            raise ValueError('Your name should not be empty string or digit')
+        if not value.isalpha():
+            raise ValueError('Your name should contain only letters!')
 
-        self.__name = value
+        self.__name = value.title()
 
     def roll_dice(self):
         player_dice = []
