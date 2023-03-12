@@ -4,6 +4,14 @@ from random import randint
 
 class Player(ABC):
     TOTAL_DICE_COUNT = 0
+    PLAYERS_DICE_VALUES = {
+        1: 0,
+        2: 0,
+        3: 0,
+        4: 0,
+        5: 0,
+        6: 0,
+    }
 
     def __init__(self, name):
         self.name = name
@@ -26,13 +34,23 @@ class Player(ABC):
         return result
 
     def remove_die(self):
-        if len(self.player_dice) > 0:
+        if len(self.player_dice):
             self.player_dice.pop()
             self.num_of_dice -= 1
             Player.TOTAL_DICE_COUNT -= 1
 
+    def collect_player_dice_values(self):
+        for die in self.player_dice:
+            Player.PLAYERS_DICE_VALUES[die] += 1
 
+    @abstractmethod
+    def make_decision(self):
+        pass
 
+    @abstractmethod
+    def make_bet(self, bet):
+        pass
 
-
-
+    @abstractmethod
+    def check_bet_is_valid(self, new_bet_dice_count, new_bet_dice_value, bet):
+        pass
