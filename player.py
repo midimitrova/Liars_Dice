@@ -1,3 +1,4 @@
+import itertools
 from abc import ABC, abstractmethod
 from random import randint
 
@@ -43,14 +44,31 @@ class Player(ABC):
         for die in self.player_dice:
             Player.PLAYERS_DICE_VALUES[die] += 1
 
+    def choose_valid_dice_combination(self, bet):
+        rolls = range(1, 7)
+        combinations = list(itertools.product(rolls, repeat=2))
+        valid_combinations = []
+        for combination in combinations:
+            if self.check_bet_is_valid(combination[0], combination[1], bet):
+                valid_combinations.append(combination)
+
+        return valid_combinations
+
+    @staticmethod
+    def check_bet_is_valid(new_bet_dice_count, new_bet_dice_value, bet):
+        if not (1 <= new_bet_dice_count <= Player.TOTAL_DICE_COUNT) or not (1 <= new_bet_dice_value <= 6):
+            return False
+
+        if not ((new_bet_dice_count >= bet['dice_count'])
+                and ((new_bet_dice_value > bet['dice_value']) or (new_bet_dice_count > bet['dice_count']))):
+            return False
+
+        return True
+
     @abstractmethod
     def make_decision(self):
         pass
 
     @abstractmethod
     def make_bet(self, bet):
-        pass
-
-    @abstractmethod
-    def check_bet_is_valid(self, new_bet_dice_count, new_bet_dice_value, bet):
         pass
