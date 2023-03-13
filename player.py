@@ -45,7 +45,7 @@ class Player(ABC):
             Player.PLAYERS_DICE_VALUES[die] += 1
 
     def choose_valid_dice_combination(self, bet):
-        rolls = range(1, 7)
+        rolls = range(1, Player.TOTAL_DICE_COUNT + 1)
         combinations = list(itertools.product(rolls, repeat=2))
         valid_combinations = []
         for combination in combinations:
