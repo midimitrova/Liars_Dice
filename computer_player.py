@@ -22,7 +22,8 @@ class ComputerPlayer(Player):
         return 'bid' if computer_decision == "bid" else "liar"
 
     def make_bet(self, bet):
-        pass
-
-    def check_bet_is_valid(self, new_bet_dice_count, new_bet_dice_value, bet):
-        pass
+        valid_combinations = self.choose_valid_dice_combination(bet)
+        if valid_combinations:
+            computer_combinations = choice(valid_combinations)
+            dice_count, dice_value = computer_combinations
+            return f"'dice_count': {dice_count}, 'dice_value': {dice_value}"
