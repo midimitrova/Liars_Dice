@@ -39,6 +39,7 @@ class Player(ABC):
     def remove_die(self):
         if len(self.player_dice):
             self.player_dice.pop()
+            self.num_of_dice -= 1
             Player.TOTAL_DICE_COUNT -= 1
 
     def collect_player_dice_values(self):
@@ -71,5 +72,5 @@ class Player(ABC):
         pass
 
     @abstractmethod
-    def make_bet(self, bet):
+    def make_bet(self, bet, player):
         pass
