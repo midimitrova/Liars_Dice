@@ -17,25 +17,6 @@ class HumanPlayer(Player):
 
         self.__name = value.title()
 
-    @staticmethod
-    def activating_wild_ones():
-        print('Additional rule for advanced players: '
-              'The "ones" face of the dice is considered wild - it always counts as the face of the current bid.')
-
-        while True:
-            try:
-                user_input = input('Do you want to activate "wild ones" mode? '
-                                   'Choose "yes" or "no": ').strip().lower()
-
-                if user_input not in ['yes', 'no']:
-                    raise ValueError
-                break
-
-            except ValueError:
-                print('Please enter "yes" or "no"!')
-
-        return user_input
-
     def make_decision(self):
         while True:
 
@@ -62,7 +43,4 @@ class HumanPlayer(Player):
 
             else:
                 if self.check_bet_is_valid(new_user_bet['dice_count'], new_user_bet['dice_value'], bet):
-                    return new_user_bet
-
-    def check_bet_is_valid(self, new_bet_dice_count, new_bet_dice_value, bet):
-        pass
+                    return f"'dice_count': {new_user_bet['dice_count']}, 'dice_value': {new_user_bet['dice_value']}"
