@@ -1,8 +1,7 @@
+from player import Player
 from human_player import HumanPlayer
 from computer_player import ComputerPlayer
 from random import choice
-
-from player import Player
 
 
 class Game:
@@ -12,12 +11,14 @@ class Game:
         self.bet = {"dice_count": 0, "dice_value": 0}
         self.current_player = ''
         self.previous_player = ''
+        self.answer_wild_ones = ''
 
     def add_players(self):
         while True:
             try:
                 user_input = HumanPlayer(input("Enter your name: ").strip())
                 self.list_of_players.append(user_input)
+                Player.collect_player_dice_values(user_input)
                 break
 
             except ValueError:
@@ -37,13 +38,14 @@ class Game:
             random_computer_player = ComputerPlayer(choice(ComputerPlayer.computer_name_list))
             if random_computer_player.name not in ComputerPlayer.get_player_name(self.list_of_players):
                 self.list_of_players.append(random_computer_player)
+                Player.collect_player_dice_values(random_computer_player)
                 computer_players -= 1
             else:
                 continue
 
     @staticmethod
     def activating_wild_ones():
-        print('Additional rule for advanced players: '
+        print('\nAdditional rule for advanced players: '
               'The "ones" face of the dice is considered wild - it always counts as the face of the current bid.')
 
         while True:
@@ -70,6 +72,7 @@ class Game:
         result = ''
         if self.check_is_player_human(player):
             result = self.activating_wild_ones()
+            self.answer_wild_ones = result
 
         return result
 
@@ -78,6 +81,7 @@ class Game:
             self.current_player = choice(self.list_of_players)
             if self.check_is_player_human(self.current_player):
                 self.turn_on_additional_rules(self.current_player)
+                print(f'Your dice are: {self.current_player.player_dice}')
 
     def choose_next_player(self):
         current_player_index = self.list_of_players.index(self.current_player)
@@ -87,12 +91,88 @@ class Game:
         self.previous_player = self.current_player
         self.current_player = next_player
 
-    def check_liar_mode(self):
-        pass
+    def check_is_player_winner(self):
+        all_current_dice_count = self.collect_wild_ones()
+
+        if all_current_dice_count < self.count_dice(self.bet['dice_value']):
+            print(f"{self.current_player.name} loses a die")
+            self.current_player.remove_die()
+        else:
+            print(f"{self.previous_player.name} loses a die")
+            self.previous_player.remove_die()
 
     def collect_wild_ones(self):
-        collect_all_dice = self.bet["dice_count"]
-        if self.turn_on_additional_rules == 'yes':
+        collect_all_dice = self.bet['dice_count']
+        if self.answer_wild_ones == 'yes':
             collect_all_dice += Player.PLAYERS_DICE_VALUES[1]
 
         return collect_all_dice
+
+    @staticmethod
+    def count_dice(face_value):
+        count = 0
+        for value in Player.PLAYERS_DICE_VALUES.keys():
+            if value == face_value:
+                count += Player.PLAYERS_DICE_VALUES[face_value]
+        return count
+
+    def reroll_player_dice(self):
+        if self.list_of_players:
+            for player in self.list_of_players:
+                player.roll_dice()
+
+    def round_result(self):
+        if len(self.current_player.player_dice) == 0:
+            self.choose_next_player()
+
+        for player in self.list_of_players:
+            if len(player.player_dice) == 0:
+                print(f"{player.name} is out of the game")
+
+        self.list_of_players = [player for player in self.list_of_players if not len(player.player_dice) == 0]
+
+        if len(self.list_of_players) == 1:
+            self.get_winner()
+
+    def start_new_round(self):
+        print("\n\nStart new round\n")
+        self.reroll_player_dice()
+        self.bet = {"dice_count": 0, "dice_value": 0}
+        if self.check_is_player_human(self.current_player):
+            self.turn_on_additional_rules(self.current_player)
+            print(f'Your dice are: {self.current_player.player_dice}')
+
+    def get_winner(self):
+        print(f"{self.list_of_players[0].name} is the winner!")
+        exit()
+
+    def reveal_hands(self):
+        for player in self.list_of_players:
+            print(f"{player.name}'s hand is: {player.player_dice}")
+
+    def play_game(self):
+
+        self.add_players()
+        self.choose_starting_player()
+        self.bet.update(self.current_player.make_bet(self.bet, self.current_player))
+        self.choose_next_player()
+
+        while True:
+            player_decision = self.current_player.make_decision()
+
+            if player_decision == "liar":
+                print(f"\n{self.current_player.name} accused that {self.previous_player.name} is a liar!")
+                print("Revealing all players hands: ")
+                self.reveal_hands()
+                self.check_is_player_winner()
+                self.round_result()
+                self.start_new_round()
+                player_decision = "bid"
+            if player_decision == "bid":
+                self.bet.update(self.current_player.make_bet(self.bet, self.current_player))
+                self.choose_next_player()
+
+
+if __name__ == "__main__":
+    my_game = Game()
+    my_game.play_game()
