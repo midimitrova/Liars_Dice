@@ -5,6 +5,7 @@ from random import randint
 
 class Player(ABC):
     TOTAL_DICE_COUNT = 0
+    INITIAL_DICE_COUNT = 5
     PLAYERS_DICE_VALUES = {
         1: 0,
         2: 0,
@@ -16,10 +17,10 @@ class Player(ABC):
 
     def __init__(self, name):
         self.name = name
-        self.num_of_dice = 5
+        self.num_of_dice = Player.INITIAL_DICE_COUNT
         self.player_dice = []
         self.roll_dice()
-        self.total_dice = Player.TOTAL_DICE_COUNT
+        self.total_dice = Player.count_total_dice()
 
     def roll_dice(self):
         player_roll = []
@@ -29,15 +30,15 @@ class Player(ABC):
         self.player_dice = player_roll
         return self.player_dice
 
-    def count_total_dice(self):
+    @staticmethod
+    def count_total_dice():
         result = Player.TOTAL_DICE_COUNT
-        Player.TOTAL_DICE_COUNT += self.num_of_dice
+        Player.TOTAL_DICE_COUNT += Player.INITIAL_DICE_COUNT
         return result
 
     def remove_die(self):
         if len(self.player_dice):
             self.player_dice.pop()
-            self.num_of_dice -= 1
             Player.TOTAL_DICE_COUNT -= 1
 
     def collect_player_dice_values(self):
