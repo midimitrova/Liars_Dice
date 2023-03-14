@@ -17,7 +17,7 @@ class HumanPlayer(Player):
 
         self.__name = value.title()
 
-    def make_decision(self):
+    def make_decision(self, bet):
         while True:
 
             user_input = input('\nWould you like to make a higher bid or calling last bidder a liar? '
@@ -28,7 +28,7 @@ class HumanPlayer(Player):
             elif user_input == 'l':
                 return 'liar'
 
-    def make_bet(self, bet, player):
+    def make_bet(self, bet):
         new_user_bet = {'dice_count': 0, 'dice_value': 0}
 
         to_print_combinations = []
@@ -51,6 +51,8 @@ class HumanPlayer(Player):
 
             else:
                 if self.check_bet_is_valid(new_user_bet['dice_count'], new_user_bet['dice_value'], bet):
-                    print(f"{player.name}'s bid is: {new_user_bet['dice_count']} X {new_user_bet['dice_value']}")
+                    # print(f"{player.name}'s bid is: {new_user_bet['dice_count']} X {new_user_bet['dice_value']}")
                     return new_user_bet
+
+
 

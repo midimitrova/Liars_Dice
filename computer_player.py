@@ -15,21 +15,24 @@ class ComputerPlayer(Player):
             players_names.append(new_player.name)
         return players_names
 
-    def make_decision(self):
+    def make_decision(self, bet):
         computer_options = ['bid', 'liar']
         computer_decision = choice(computer_options)
 
-        if self.make_bet is None:
+        if self.make_bet(bet) is None:
             return 'liar'
+
         else:
             return 'bid' if computer_decision == "bid" else "liar"
 
-    def make_bet(self, bet, player):
+    def make_bet(self, bet):
         valid_combinations = self.choose_valid_dice_combination(bet)
         if valid_combinations:
             computer_combinations = choice(valid_combinations)
             dice_count, dice_value = computer_combinations
-            print(f"{player.name}'s bid is: {dice_count} X {dice_value}")
+            # print(f"{player.name}'s bid is: {dice_count} X {dice_value}")
             return {'dice_count': dice_count, 'dice_value': dice_value}
+        else:
+            return None
 
 

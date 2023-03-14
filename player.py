@@ -23,11 +23,14 @@ class Player(ABC):
         self.total_dice = Player.count_total_dice()
 
     def roll_dice(self):
+
         player_roll = []
         for _ in range(self.num_of_dice):
             roll = randint(1, 6)
             player_roll.append(roll)
         self.player_dice = player_roll
+        self.remove_player_dice_values()
+        self.collect_player_dice_values()
         return self.player_dice
 
     @staticmethod
@@ -46,12 +49,16 @@ class Player(ABC):
         for die in self.player_dice:
             Player.PLAYERS_DICE_VALUES[die] += 1
 
-    def choose_valid_dice_combination(self, bet):
+    def remove_player_dice_values(self):
+        for die in self.player_dice:
+            Player.PLAYERS_DICE_VALUES[die] = 0
+    @staticmethod
+    def choose_valid_dice_combination(bet):
         rolls = range(1, Player.TOTAL_DICE_COUNT + 1)
         combinations = list(itertools.product(rolls, repeat=2))
         valid_combinations = []
         for combination in combinations:
-            if self.check_bet_is_valid(combination[0], combination[1], bet):
+            if Player.check_bet_is_valid(combination[0], combination[1], bet):
                 valid_combinations.append(combination)
 
         return valid_combinations
@@ -61,16 +68,16 @@ class Player(ABC):
         if not (1 <= new_bet_dice_count <= Player.TOTAL_DICE_COUNT) or not (1 <= new_bet_dice_value <= 6):
             return False
 
-        if not ((new_bet_dice_count >= bet['dice_count'])
+        if not ((new_bet_dice_count >= bet['dice_count']) and (new_bet_dice_value >= bet['dice_value'])
                 and ((new_bet_dice_value > bet['dice_value']) or (new_bet_dice_count > bet['dice_count']))):
             return False
 
         return True
 
     @abstractmethod
-    def make_decision(self):
+    def make_decision(self, bet):
         pass
 
     @abstractmethod
-    def make_bet(self, bet, player):
+    def make_bet(self, bet):
         pass

@@ -12,13 +12,13 @@ class Game:
         self.current_player = ''
         self.previous_player = ''
         self.answer_wild_ones = ''
+        self.is_loser = ''
 
     def add_players(self):
         while True:
             try:
                 user_input = HumanPlayer(input("Enter your name: ").strip())
                 self.list_of_players.append(user_input)
-                Player.collect_player_dice_values(user_input)
                 break
 
             except ValueError:
@@ -38,7 +38,6 @@ class Game:
             random_computer_player = ComputerPlayer(choice(ComputerPlayer.computer_name_list))
             if random_computer_player.name not in ComputerPlayer.get_player_name(self.list_of_players):
                 self.list_of_players.append(random_computer_player)
-                Player.collect_player_dice_values(random_computer_player)
                 computer_players -= 1
             else:
                 continue
@@ -94,24 +93,32 @@ class Game:
     def check_is_player_winner(self):
         all_current_dice_count = self.collect_wild_ones()
 
-        if all_current_dice_count < self.count_dice(self.bet['dice_value']):
-            print(f"{self.current_player.name} loses a die")
-            self.current_player.remove_die()
-        else:
+        if all_current_dice_count < self.bet['dice_count']:
             print(f"{self.previous_player.name} loses a die")
             self.previous_player.remove_die()
+            print(all_current_dice_count)
+            print(self.bet['dice_count'])
+            # self.is_loser = self.current_player
+        else:
+            print(f"{self.current_player.name} loses a die")
+            print(all_current_dice_count)
+            print(self.bet['dice_count'])
+            self.current_player.remove_die()
+            # self.is_loser = self.previous_player
 
     def collect_wild_ones(self):
-        collect_all_dice = self.bet['dice_count']
+        face_value = self.bet['dice_value']
+        collect_all_dice = self.count_dice(face_value)
         if self.answer_wild_ones == 'yes':
             collect_all_dice += Player.PLAYERS_DICE_VALUES[1]
-
-        return collect_all_dice
+            return collect_all_dice
+        else:
+            return collect_all_dice
 
     @staticmethod
     def count_dice(face_value):
         count = 0
-        for value in Player.PLAYERS_DICE_VALUES.keys():
+        for value in Player.PLAYERS_DICE_VALUES:
             if value == face_value:
                 count += Player.PLAYERS_DICE_VALUES[face_value]
         return count
@@ -122,7 +129,7 @@ class Game:
                 player.roll_dice()
 
     def round_result(self):
-        if len(self.current_player.player_dice) == 0:
+        while len(self.current_player.player_dice) == 0:
             self.choose_next_player()
 
         for player in self.list_of_players:
@@ -133,6 +140,16 @@ class Game:
 
         if len(self.list_of_players) == 1:
             self.get_winner()
+
+    # def print_valid_combinations(bet):
+    #     to_print_combinations = []
+    #     print('\nYou can choose from these combinations: ')
+    #     valid_combinations = Player.choose_valid_dice_combination(bet)
+    #     for comb in valid_combinations:
+    #         dice_count, dice_value = comb
+    #         to_print_combinations.append(f'{dice_count} X {dice_value}')
+    #     print(', '.join(to_print_combinations))
+
 
     def start_new_round(self):
         print("\n\nStart new round\n")
@@ -154,11 +171,12 @@ class Game:
 
         self.add_players()
         self.choose_starting_player()
-        self.bet.update(self.current_player.make_bet(self.bet, self.current_player))
+        self.bet.update(self.current_player.make_bet(self.bet))
+        print(f"{self.current_player.name}'s bid is: {self.bet['dice_count']} X {self.bet['dice_value']}")
         self.choose_next_player()
 
         while True:
-            player_decision = self.current_player.make_decision()
+            player_decision = self.current_player.make_decision(self.bet)
 
             if player_decision == "liar":
                 print(f"\n{self.current_player.name} accused that {self.previous_player.name} is a liar!")
@@ -168,8 +186,10 @@ class Game:
                 self.round_result()
                 self.start_new_round()
                 player_decision = "bid"
+                # self.current_player = self.is_loser
             if player_decision == "bid":
-                self.bet.update(self.current_player.make_bet(self.bet, self.current_player))
+                self.bet.update(self.current_player.make_bet(self.bet))
+                print(f"{self.current_player.name}'s bid is: {self.bet['dice_count']} X {self.bet['dice_value']}")
                 self.choose_next_player()
 
 
