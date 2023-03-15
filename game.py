@@ -80,7 +80,6 @@ class Game:
             self.current_player = choice(self.list_of_players)
             if self.check_is_player_human(self.current_player):
                 self.turn_on_additional_rules(self.current_player)
-                print(f'Your dice are: {self.current_player.player_dice}')
 
     def choose_next_player(self):
         current_player_index = self.list_of_players.index(self.current_player)
@@ -157,13 +156,18 @@ class Game:
                 to_print_combinations.append(f'{dice_count} X {dice_value}')
             print(', '.join(to_print_combinations))
 
+    def show_human_dice(self):
+        for player in self.list_of_players:
+            if self.check_is_player_human(player):
+                print(f'\nYour dice are: {player.player_dice}\n')
+
     def start_new_round(self):
         print("\n\nStart new round\n")
         self.reroll_player_dice()
+        self.show_human_dice()
         self.bet = {"dice_count": 0, "dice_value": 0}
         if self.check_is_player_human(self.current_player):
             self.turn_on_additional_rules(self.current_player)
-            print(f'Your dice are: {self.current_player.player_dice}')
 
     def get_winner(self):
         print(f"{self.list_of_players[0].name} is the winner!")
@@ -174,8 +178,9 @@ class Game:
             print(f"{player.name}'s hand is: {player.player_dice}")
 
     def play_game(self):
-
+        print("Welcome!\nThis is Liar's Dice Game!\nLet's play!\n")
         self.add_players()
+        self.show_human_dice()
         self.choose_starting_player()
         self.print_valid_combinations(self.bet, self.current_player)
         self.bet.update(self.current_player.make_bet(self.bet))
