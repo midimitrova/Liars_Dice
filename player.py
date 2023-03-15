@@ -23,13 +23,11 @@ class Player(ABC):
         self.total_dice = Player.count_total_dice()
 
     def roll_dice(self):
-
         player_roll = []
         for _ in range(self.num_of_dice):
             roll = randint(1, 6)
             player_roll.append(roll)
         self.player_dice = player_roll
-        self.remove_player_dice_values()
         self.collect_player_dice_values()
         return self.player_dice
 
@@ -49,9 +47,6 @@ class Player(ABC):
         for die in self.player_dice:
             Player.PLAYERS_DICE_VALUES[die] += 1
 
-    def remove_player_dice_values(self):
-        for die in self.player_dice:
-            Player.PLAYERS_DICE_VALUES[die] = 0
     @staticmethod
     def choose_valid_dice_combination(bet):
         rolls = range(1, Player.TOTAL_DICE_COUNT + 1)
@@ -60,8 +55,10 @@ class Player(ABC):
         for combination in combinations:
             if Player.check_bet_is_valid(combination[0], combination[1], bet):
                 valid_combinations.append(combination)
-
-        return valid_combinations
+        if valid_combinations:
+            return valid_combinations
+        else:
+            return None
 
     @staticmethod
     def check_bet_is_valid(new_bet_dice_count, new_bet_dice_value, bet):
