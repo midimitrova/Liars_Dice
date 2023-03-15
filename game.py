@@ -93,23 +93,19 @@ class Game:
     def check_is_player_winner(self):
         all_current_dice_count = self.collect_wild_ones()
 
-        if all_current_dice_count < self.bet['dice_count']:
+        if all_current_dice_count >= self.bet['dice_count']:
+            print(f"{self.current_player.name} loses a die")
+            self.current_player.remove_die()
+            self.is_loser = self.current_player
+        else:
             print(f"{self.previous_player.name} loses a die")
             self.previous_player.remove_die()
-            print(all_current_dice_count)
-            print(self.bet['dice_count'])
-            # self.is_loser = self.current_player
-        else:
-            print(f"{self.current_player.name} loses a die")
-            print(all_current_dice_count)
-            print(self.bet['dice_count'])
-            self.current_player.remove_die()
-            # self.is_loser = self.previous_player
+            self.is_loser = self.previous_player
 
     def collect_wild_ones(self):
         face_value = self.bet['dice_value']
         collect_all_dice = self.count_dice(face_value)
-        if self.answer_wild_ones == 'yes':
+        if self.answer_wild_ones == 'yes' and face_value != 1:
             collect_all_dice += Player.PLAYERS_DICE_VALUES[1]
             return collect_all_dice
         else:
@@ -123,7 +119,13 @@ class Game:
                 count += Player.PLAYERS_DICE_VALUES[face_value]
         return count
 
+    @staticmethod
+    def remove_player_dice_values():
+        for value in Player.PLAYERS_DICE_VALUES:
+            Player.PLAYERS_DICE_VALUES[value] = 0
+
     def reroll_player_dice(self):
+        self.remove_player_dice_values()
         if self.list_of_players:
             for player in self.list_of_players:
                 player.roll_dice()
@@ -132,24 +134,28 @@ class Game:
         while len(self.current_player.player_dice) == 0:
             self.choose_next_player()
 
+        self.current_player = self.is_loser
+
         for player in self.list_of_players:
             if len(player.player_dice) == 0:
                 print(f"{player.name} is out of the game")
+                self.choose_next_player()
 
         self.list_of_players = [player for player in self.list_of_players if not len(player.player_dice) == 0]
 
         if len(self.list_of_players) == 1:
             self.get_winner()
 
-    # def print_valid_combinations(bet):
-    #     to_print_combinations = []
-    #     print('\nYou can choose from these combinations: ')
-    #     valid_combinations = Player.choose_valid_dice_combination(bet)
-    #     for comb in valid_combinations:
-    #         dice_count, dice_value = comb
-    #         to_print_combinations.append(f'{dice_count} X {dice_value}')
-    #     print(', '.join(to_print_combinations))
-
+    def print_valid_combinations(self, bet, player):
+        is_human = self.check_is_player_human(player)
+        if is_human:
+            to_print_combinations = []
+            print('\nYou can choose from these combinations: ')
+            valid_combinations = Player.choose_valid_dice_combination(bet)
+            for comb in valid_combinations:
+                dice_count, dice_value = comb
+                to_print_combinations.append(f'{dice_count} X {dice_value}')
+            print(', '.join(to_print_combinations))
 
     def start_new_round(self):
         print("\n\nStart new round\n")
@@ -171,6 +177,7 @@ class Game:
 
         self.add_players()
         self.choose_starting_player()
+        self.print_valid_combinations(self.bet, self.current_player)
         self.bet.update(self.current_player.make_bet(self.bet))
         print(f"{self.current_player.name}'s bid is: {self.bet['dice_count']} X {self.bet['dice_value']}")
         self.choose_next_player()
@@ -186,8 +193,8 @@ class Game:
                 self.round_result()
                 self.start_new_round()
                 player_decision = "bid"
-                # self.current_player = self.is_loser
             if player_decision == "bid":
+                self.print_valid_combinations(self.bet, self.current_player)
                 self.bet.update(self.current_player.make_bet(self.bet))
                 print(f"{self.current_player.name}'s bid is: {self.bet['dice_count']} X {self.bet['dice_value']}")
                 self.choose_next_player()
