@@ -1,0 +1,49 @@
+from unittest import TestCase, main
+from unittest.mock import patch
+
+from game_project.human_player import HumanPlayer
+from game_project.player import Player
+
+
+class TestHumanPlayer(TestCase):
+    def setUp(self):
+        self.human_player = HumanPlayer('Angela')
+
+    def test_is_initialized_correct(self):
+        self.assertEqual('Angela', self.human_player.name)
+        self.assertEqual(5, self.human_player.num_of_dice)
+        self.assertEqual(self.human_player.num_of_dice, len(self.human_player.player_dice))
+        self.assertEqual(10, self.human_player.count_total_dice())
+        self.assertTrue(issubclass(self.human_player.__class__, Player))
+
+    def test_is_name_is_correctly_written(self):
+        self.assertEqual('Angela', self.human_player.name)
+
+    def test_is_name_is_not_correctly_written(self):
+        with self.assertRaises(ValueError) as ve:
+            self.human_player.name = 'Ange11$.'
+        self.assertEqual('Your name should contain only letters!', str(ve.exception))
+        # test if name is the same after thrown error
+        self.assertEqual('Angela', self.human_player.name)
+
+    @patch('builtins.input', side_effect=['b'])
+    def test_make_decision_is_taken_correctly_with_bid(self, mock_input):
+        bet = {'dice_count': 2, 'dice_value': 3}
+        result = self.human_player.make_decision(bet)
+        self.assertEqual(result, 'bid')
+
+    @patch('builtins.input', side_effect=['l'])
+    def test_make_decision_is_taken_correctly_with_liar(self, mock_input):
+        bet = {'dice_count': 2, 'dice_value': 3}
+        result = self.human_player.make_decision(bet)
+        self.assertEqual(result, 'liar')
+
+    @patch('builtins.input', side_effect=['b', 'l'])
+    def test_are_there_more_valid_combination_to_choose_when_player_set_bid(self, mock_input):
+        bet = {'dice_count': 2, 'dice_value': 3}
+        self.human_player.choose_valid_dice_combination = lambda x: None
+        self.assertEqual(self.human_player.make_decision(bet), 'liar')
+
+
+if __name__ == '__main__':
+    main()
