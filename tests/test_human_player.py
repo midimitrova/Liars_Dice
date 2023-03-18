@@ -44,6 +44,27 @@ class TestHumanPlayer(TestCase):
         self.human_player.choose_valid_dice_combination = lambda x: None
         self.assertEqual(self.human_player.make_decision(bet), 'liar')
 
+    @patch('builtins.input', side_effect=['3', '4'])
+    def test_make_bet_with_valid_bet(self, mock_input):
+        bet = {'dice_count': 2, 'dice_value': 3}
+        expected_result = {'dice_count': 3, 'dice_value': 4}
+        result = self.human_player.make_bet(bet)
+        self.assertEqual(result, expected_result)
+
+    @patch('builtins.input')
+    def test_make_bet_with_invalid_user_input(self, mock_input):
+        mock_input.side_effect = ['0', '7', '3', '4']
+        bet = {'dice_count': 2, 'dice_value': 3}
+        result = self.human_player.make_bet(bet)
+        self.assertEqual(result, {'dice_count': 3, 'dice_value': 4})
+
+    def test_make_bet_with_invalid_and_valid_bet_for_check_bet_is_valid_method(self):
+        bet = {'dice_count': 3, 'dice_value': 4}
+        self.assertFalse(self.human_player.check_bet_is_valid(2, 1, bet))
+        self.assertFalse(self.human_player.check_bet_is_valid(3, 2, bet))
+        self.assertTrue(self.human_player.check_bet_is_valid(4, 4, bet))
+        self.assertTrue(self.human_player.check_bet_is_valid(3, 5, bet))
+
 
 if __name__ == '__main__':
     main()
