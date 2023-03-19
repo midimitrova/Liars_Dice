@@ -1,4 +1,4 @@
-from player import Player
+from game_project.player import Player
 
 
 class HumanPlayer(Player):

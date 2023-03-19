@@ -1,6 +1,6 @@
-from player import Player
-from human_player import HumanPlayer
-from computer_player import ComputerPlayer
+from game_project.player import Player
+from game_project.human_player import HumanPlayer
+from game_project.computer_player import ComputerPlayer
 from random import choice
 
 
