@@ -1,4 +1,4 @@
-from unittest import TestCase
+from unittest import TestCase, main
 from game_project.computer_player import ComputerPlayer
 from game_project.player import Player
 
@@ -35,3 +35,7 @@ class TestComputerPlayer(TestCase):
         bet = self.computer_player.make_bet({'dice_count': 3, 'dice_value': 4})
         self.assertIn(bet['dice_count'], [3, 2])
         self.assertIn(bet['dice_value'], [2, 5])
+
+
+if __name__ == '__main__':
+    main()
