@@ -1,5 +1,5 @@
 from unittest import TestCase, main
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 from game_project.computer_player import ComputerPlayer
 from game_project.game import Game
@@ -91,7 +91,7 @@ class TestGame(TestCase):
         human_player = HumanPlayer('Maria')
         first_computer_player = ComputerPlayer('Emma')
         second_computer_player = ComputerPlayer('Liam')
-        self.game.list_of_players = (human_player, first_computer_player, second_computer_player)
+        self.game.list_of_players.extend([human_player, first_computer_player, second_computer_player])
         self.game.current_player = human_player
 
         self.game.choose_next_player()
@@ -106,21 +106,74 @@ class TestGame(TestCase):
         result = self.game.current_player
         self.assertEqual(result, human_player)
 
+    def test_check_is_player_winner(self):
+        human = HumanPlayer('Maria')
+        computer = ComputerPlayer('Emma')
+        self.game.list_of_players = [human, computer]
+        self.game.current_player = human
+        self.game.bet = {"dice_count": 3, "dice_value": 5}
+        self.game.current_player = computer
+        self.game.previous_player = human
+        human.player_dice = [5, 5, 5, 2, 3]
+        computer.player_dice = [2, 2, 2, 3, 4]
+
+        self.game.check_is_player_winner()
+
+        self.assertIn(computer, self.game.list_of_players)
+        self.assertEqual(4, len(computer.player_dice))
+        self.assertEqual(computer, self.game.is_loser)
+
     def test_collect_wild_ones_with_yes_answer(self):
         self.game.bet = {"dice_count": 3, "dice_value": 3}
         self.game.answer_wild_ones = 'yes'
         self.game.current_player = HumanPlayer('Maria')
-        result = self.game.collect_wild_ones()
-        expected = Player.PLAYERS_DICE_VALUES[3] + Player.PLAYERS_DICE_VALUES[1]
+        expected = self.game.collect_wild_ones()
+        result = Player.PLAYERS_DICE_VALUES[3] + Player.PLAYERS_DICE_VALUES[1]
         self.assertEqual(result, expected)
 
     def test_collect_wild_ones_with_no_answer(self):
         self.game.bet = {"dice_count": 3, "dice_value": 3}
         self.game.answer_wild_ones = 'no'
         self.game.current_player = HumanPlayer('Maria')
-        result = self.game.collect_wild_ones()
-        expected = Player.PLAYERS_DICE_VALUES[3]
+        expected = self.game.collect_wild_ones()
+        result = Player.PLAYERS_DICE_VALUES[3]
         self.assertEqual(result, expected)
+
+    def test_count_dice_correct(self):
+        human = HumanPlayer('Maria')
+        self.game.list_of_players = [human]
+        self.game.current_player = human
+        human.player_dice = [1, 1, 2, 3, 4]
+        Player.PLAYERS_DICE_VALUES = {1: 2, 2: 1, 3: 1, 4: 1, 5: 0, 6: 0}
+
+        self.assertEqual(2, self.game.count_dice(1))
+        self.assertEqual(1, self.game.count_dice(2))
+        self.assertEqual(0, self.game.count_dice(5))
+
+    def test_remove_players_dice_correct(self):
+        human = HumanPlayer('Maria')
+        self.game.list_of_players = [human]
+        self.game.current_player = human
+        human.player_dice = [1, 1, 2, 3, 4]
+        Player.PLAYERS_DICE_VALUES = {1: 2, 2: 1, 3: 1, 4: 1, 5: 0, 6: 0}
+
+        self.game.remove_player_dice_values()
+
+        self.assertEqual(0, Player.PLAYERS_DICE_VALUES[2])
+        self.assertNotEqual(2, Player.PLAYERS_DICE_VALUES[1])
+        self.assertEqual(0, Player.PLAYERS_DICE_VALUES[4])
+
+    def test_roll_again_players_dice(self):
+        Player.PLAYERS_DICE_VALUES = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0}
+        human = HumanPlayer('Maria')
+        self.game.list_of_players = [human]
+        self.game.current_player = human
+        rolls = human.roll_dice()
+        self.assertEqual(len(rolls), human.num_of_dice)
+        for roll in rolls:
+            self.assertGreaterEqual(roll, 1)
+            self.assertLessEqual(roll, 6)
+
 
 
 if __name__ == '__main__':
