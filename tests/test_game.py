@@ -1,5 +1,5 @@
 from unittest import TestCase, main
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, call
 
 from game_project.computer_player import ComputerPlayer
 from game_project.game import Game
@@ -174,6 +174,70 @@ class TestGame(TestCase):
             self.assertGreaterEqual(roll, 1)
             self.assertLessEqual(roll, 6)
 
+    def test_round_result(self):
+        human_player = HumanPlayer('Maria')
+        first_computer_player = ComputerPlayer('Emma')
+        second_computer_player = ComputerPlayer('Liam')
+        human_player.player_dice = [1, 2]
+        first_computer_player.player_dice = []
+        second_computer_player.player_dice = [4, 5]
+        self.game.list_of_players = [human_player, first_computer_player, second_computer_player]
+        self.game.current_player = first_computer_player
+        self.game.is_loser = first_computer_player
+
+        self.game.round_result()
+
+        self.assertNotIn(first_computer_player, self.game.list_of_players)
+        self.assertEqual(second_computer_player, self.game.current_player)
+        self.assertIn(second_computer_player, self.game.list_of_players)
+        self.assertEqual(2, len(self.game.list_of_players))
+
+    def test_print_valid_combinations(self):
+        human_player = HumanPlayer('Maria')
+        self.game.list_of_players = [human_player]
+        bet = {"dice_count": 2, "dice_value": 4}
+        player = self.game.list_of_players[0]
+        self.game.print_valid_combinations(bet, player)
+
+    def test_show_human_dice_correct(self):
+        human_player = HumanPlayer('Maria')
+        first_computer_player = ComputerPlayer('Emma')
+        second_computer_player = ComputerPlayer('Liam')
+        self.game.list_of_players = [human_player, first_computer_player, second_computer_player]
+        human_player.player_dice = [1, 2, 3]
+        with patch("builtins.print") as mock_print:
+            self.game.show_human_dice()
+            mock_print.assert_called_with(f"\nYour dice are: {human_player.player_dice}\n")
+
+    def test_start_new_round_correct(self):
+        human_player = HumanPlayer('Maria')
+        first_computer_player = ComputerPlayer('Emma')
+        second_computer_player = ComputerPlayer('Liam')
+        self.game.list_of_players = [human_player, first_computer_player, second_computer_player]
+        human_player.player_dice = [1, 2, 3, 4, 5]
+        self.game.bet = {"dice_count": 2, "dice_value": 3}
+        self.game.start_new_round()
+        self.assertEqual(self.game.bet, {"dice_count": 0, "dice_value": 0})
+        self.assertNotEqual(human_player.player_dice, [1, 2, 3, 4, 5])
+
+    @patch('builtins.exit')
+    def test_get_winner_correct(self, mock_exit):
+        human_player = HumanPlayer('Maria')
+        self.game.list_of_players = [human_player]
+        self.game.get_winner()
+        mock_exit.assert_called_once()
+
+    @patch('builtins.print')
+    def test_reveal_players_hands_correct(self, mock_print):
+        human_player = HumanPlayer('Maria')
+        computer_player = ComputerPlayer('Emma')
+        human_player.player_dice = [1, 2, 3, 4, 5]
+        computer_player.player_dice = [1, 2, 3, 4, 5]
+        self.game.list_of_players = [human_player, computer_player]
+        self.game.reveal_hands()
+        expected_output = [call("Maria's hand is: [1, 2, 3, 4, 5]"),
+                           call("Emma's hand is: [1, 2, 3, 4, 5]")]
+        mock_print.assert_has_calls(expected_output)
 
 
 if __name__ == '__main__':
