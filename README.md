@@ -32,7 +32,6 @@ The winner of the game is the last player who have any dice remaining.
 ### Built With
 
  - Python 3.11
- - Pycharm
 
 
 ### Live Demo
