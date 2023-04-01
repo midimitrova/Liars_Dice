@@ -1,8 +1,8 @@
 # Liar's Dice
-Python implementation of Liar's Dice game
+Python implementation of Liar's Dice game.
 
 
-### Rules of the Game:
+### Rules of the Game
 
 The game is played by two or more players. Five dice are used per player with dice cups used for concealment. 
 The game is round-based. Each round, each player rolls a “hand” of dice under their cup and looks at their hand while 
@@ -37,7 +37,7 @@ The winner of the game is the last player who have any dice remaining.
 
 ### Live Demo
 
-Play with the code at: https://replit.com/@mpopova/LiarsDiceGame?fbclid=IwAR2oErqs-nK1BdT8oRrk0m-_yKxdzREjsTmgmms6GewGILkIgNQPzEMbF60
+Play with the code and game at: https://replit.com/@mpopova/LiarsDiceGame?fbclid=IwAR2oErqs-nK1BdT8oRrk0m-_yKxdzREjsTmgmms6GewGILkIgNQPzEMbF60
 
 ### TODO
 
