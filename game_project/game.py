@@ -40,7 +40,7 @@ class Game:
                 self.list_of_players.append(random_computer_player)
                 computer_players -= 1
             else:
-                Player.TOTAL_DICE_COUNT -= 5
+                Player.TOTAL_DICE_COUNT -= Player.INITIAL_DICE_COUNT
                 continue
 
     @staticmethod
