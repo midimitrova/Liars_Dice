@@ -20,7 +20,7 @@ class Player(ABC):
         self.num_of_dice = Player.INITIAL_DICE_COUNT
         self.player_dice = []
         self.roll_dice()
-        self.total_dice = Player.count_total_dice()
+        self.total_dice = self.count_total_dice()
 
     def roll_dice(self):
         player_roll = []
@@ -31,10 +31,9 @@ class Player(ABC):
         self.collect_player_dice_values()
         return self.player_dice
 
-    @staticmethod
-    def count_total_dice():
+    def count_total_dice(self):
         result = Player.TOTAL_DICE_COUNT
-        Player.TOTAL_DICE_COUNT += Player.INITIAL_DICE_COUNT
+        Player.TOTAL_DICE_COUNT += self.num_of_dice
         return result
 
     def remove_die(self):
