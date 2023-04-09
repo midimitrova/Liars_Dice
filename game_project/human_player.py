@@ -49,7 +49,7 @@ class HumanPlayer(Player):
 
             except ValueError:
                 print("You should bid a higher quantity of the same face or any particular quantity of a higher face.\n"
-                      f"You can't bid a number of dice larger than all dice on table: {Player.TOTAL_DICE_COUNT}, "
+                      f"You can't bid a number of dice larger than all dice on table: {Player.TOTAL_DICE_COUNT} or 0, "
                       f"or a face value of die lower than 1 and higher than 6.")
                 continue
 

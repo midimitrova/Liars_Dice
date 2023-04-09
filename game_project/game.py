@@ -204,8 +204,3 @@ class Game:
                 self.bet.update(self.current_player.make_bet(self.bet))
                 print(f"{self.current_player.name}'s bid is: {self.bet['dice_count']} X {self.bet['dice_value']}")
                 self.choose_next_player()
-
-
-# if __name__ == "__main__":
-    # my_game = Game()
-    # my_game.play_game()
