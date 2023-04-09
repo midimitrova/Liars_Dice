@@ -7,11 +7,10 @@ class TestComputerPlayer(TestCase):
     def setUp(self):
         self.computer_player = ComputerPlayer('Isabella')
 
-    def test_is_initialized_correct(self):
+    def test_is_computer_player_initialized_correct(self):
         self.assertEqual('Isabella', self.computer_player.name)
         self.assertEqual(5, self.computer_player.num_of_dice)
         self.assertEqual(self.computer_player.num_of_dice, len(self.computer_player.player_dice))
-        self.assertEqual(10, self.computer_player.count_total_dice())
         self.assertTrue(issubclass(self.computer_player.__class__, Player))
 
     def test_get_player_name_correct(self):

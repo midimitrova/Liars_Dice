@@ -20,43 +20,49 @@ class TestGame(TestCase):
         self.assertEqual('', self.game.is_loser)
 
     def test_add_human_player_correct(self):
-        with patch('builtins.input', side_effect=['Maria', '1']):
+        with patch('builtins.input', side_effect=['John', 1]):
             self.game.add_players()
-        self.assertIsInstance(self.game.list_of_players[0], HumanPlayer)
+            self.assertIsInstance(self.game.list_of_players[0], HumanPlayer)
 
     def test_add_computer_players_correct(self):
-        with patch('builtins.input', side_effect=['John', '3']):
+        with patch('builtins.input', side_effect=['John', 3]):
             self.game.add_players()
-        self.assertEqual(4, len(self.game.list_of_players))
-        result = [comp_player for comp_player in self.game.list_of_players if type(comp_player) == ComputerPlayer]
-        self.assertEqual(3, len(result))
+            self.assertEqual(4, len(self.game.list_of_players))
+            result = [comp_player for comp_player in self.game.list_of_players if type(comp_player) == ComputerPlayer]
+            self.assertEqual(3, len(result))
 
-    @patch('builtins.input', side_effect=['123', 'John', '2'])
-    def test_add_players_with_invalid_name(self, mock_input):
-        self.game.add_players()
-        self.assertEqual(3, len(self.game.list_of_players))
+    def test_add_players_with_invalid_name(self):
+        with patch('builtins.input', side_effect=['123', 'John', 1]):
+            self.game.add_players()
+            self.assertEqual(2, len(self.game.list_of_players))
 
     def test_add_computer_player_with_invalid_input(self):
-        with patch('builtins.input', side_effect=['John', '0', '11', '3']):
+        with patch('builtins.input', side_effect=['John', 0, 11, 3]):
             self.game.add_players()
-        self.assertEqual(4, len(self.game.list_of_players))
-        result = [comp_player for comp_player in self.game.list_of_players if type(comp_player) == ComputerPlayer]
-        self.assertEqual(3, len(result))
+            self.assertEqual(4, len(self.game.list_of_players))
+            result = [comp_player for comp_player in self.game.list_of_players if type(comp_player) == ComputerPlayer]
+            self.assertEqual(3, len(result))
 
-    @patch('builtins.input', side_effect=['yes'])
-    def test_activating_wild_ones_with_positive_input(self, mock_input):
-        result = self.game.activating_wild_ones()
-        self.assertEqual('yes', result)
+    def test_add_players_players_total_dice(self):
+        Player.TOTAL_DICE_COUNT = 0
+        with patch('builtins.input', side_effect=['John', 2]):
+            self.game.add_players()
+            self.assertEqual(15, Player.TOTAL_DICE_COUNT)
 
-    @patch('builtins.input', side_effect=['no'])
-    def test_activating_wild_ones_with_negative_input(self, mock_input):
-        result = self.game.activating_wild_ones()
-        self.assertEqual('no', result)
+    def test_activating_wild_ones_with_positive_input(self):
+        with patch('builtins.input', side_effect=['yes']):
+            result = self.game.activating_wild_ones()
+            self.assertEqual('yes', result)
+
+    def test_activating_wild_ones_with_negative_input(self):
+        with patch('builtins.input', side_effect=['no']):
+            result = self.game.activating_wild_ones()
+            self.assertEqual('no', result)
 
     def test_activating_wild_ones_with_invalid_input(self):
         with patch('builtins.input', side_effect=['hey', 'yes']):
             result = self.game.activating_wild_ones()
-        self.assertEqual('yes', result)
+            self.assertEqual('yes', result)
 
     def test_check_is_player_human(self):
         human_player = HumanPlayer('Maria')
@@ -71,14 +77,14 @@ class TestGame(TestCase):
 
         with patch('builtins.input', side_effect=['yes']):
             result = self.game.turn_on_additional_rules(human_player)
-        self.assertEqual(result, 'yes')
+            self.assertEqual(result, 'yes')
 
     def test_turn_on_additional_rules_with_negative_answer_correct(self):
         human_player = HumanPlayer('Maria')
 
         with patch('builtins.input', side_effect=['no']):
             result = self.game.turn_on_additional_rules(human_player)
-        self.assertEqual(result, 'no')
+            self.assertEqual(result, 'no')
 
     def test_choose_starting_player_correct(self):
         self.game.list_of_players = ['Maria', 'Liam', 'Emma']
@@ -129,7 +135,7 @@ class TestGame(TestCase):
         self.game.current_player = HumanPlayer('Maria')
         expected = self.game.collect_wild_ones()
         result = Player.PLAYERS_DICE_VALUES[3] + Player.PLAYERS_DICE_VALUES[1]
-        self.assertEqual(result, expected)
+        self.assertEqual(expected, result)
 
     def test_collect_wild_ones_with_no_answer(self):
         self.game.bet = {"dice_count": 3, "dice_value": 3}
@@ -137,7 +143,7 @@ class TestGame(TestCase):
         self.game.current_player = HumanPlayer('Maria')
         expected = self.game.collect_wild_ones()
         result = Player.PLAYERS_DICE_VALUES[3]
-        self.assertEqual(result, expected)
+        self.assertEqual(expected, result)
 
     def test_count_dice_correct(self):
         human = HumanPlayer('Maria')
