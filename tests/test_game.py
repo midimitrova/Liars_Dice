@@ -27,16 +27,21 @@ class TestGame(TestCase):
     def test_add_computer_players_correct(self):
         with patch('builtins.input', side_effect=['John', 3]):
             self.game.add_players()
-            self.assertEqual(4, len(self.game.list_of_players))
             result = [comp_player for comp_player in self.game.list_of_players if type(comp_player) == ComputerPlayer]
             self.assertEqual(3, len(result))
 
-    def test_add_players_with_invalid_name(self):
+    def test_add_players_length_list_players(self):
+        with patch('builtins.input', side_effect=['John', 3]):
+            self.game.add_players()
+            self.assertNotEqual(3, len(self.game.list_of_players))
+            self.assertEqual(4, len(self.game.list_of_players))
+
+    def test_add_players_try_with_invalid_name(self):
         with patch('builtins.input', side_effect=['123', 'John', 1]):
             self.game.add_players()
             self.assertEqual(2, len(self.game.list_of_players))
 
-    def test_add_computer_player_with_invalid_input(self):
+    def test_add_computer_player_try_with_invalid_input(self):
         with patch('builtins.input', side_effect=['John', 0, 11, 3]):
             self.game.add_players()
             self.assertEqual(4, len(self.game.list_of_players))
