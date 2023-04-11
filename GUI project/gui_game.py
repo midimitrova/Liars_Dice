@@ -17,6 +17,7 @@ class Game:
         self.is_loser = ''
 
     def add_players(self):
+
         while True:
             try:
                 user_input = HumanPlayer(authentication.human_player_name_box.get())
@@ -59,6 +60,7 @@ class Game:
                 self.list_of_players.append(random_computer_player)
                 computer_players -= 1
             else:
+                Player.TOTAL_DICE_COUNT -= Player.INITIAL_DICE_COUNT
                 continue
 
     @staticmethod
@@ -178,7 +180,9 @@ class Game:
     def show_human_dice(self):
         for player in self.list_of_players:
             if self.check_is_player_human(player):
-                print(f'\nYour dice are: {player.player_dice}\n')
+                player_dice = f'{player.player_dice}'
+                frame.create_text(text=f"Your dice are: {player_dice}")
+                # print(f'\nYour dice are: {player.player_dice}\n')
 
     def start_new_round(self):
         print("\n\nStart new round\n")
@@ -197,7 +201,6 @@ class Game:
             print(f"{player.name}'s hand is: {player.player_dice}")
 
     def play_game(self):
-        print("Welcome!\nThis is Liar's Dice Game!\nLet's play!\n")
         self.add_players()
         self.show_human_dice()
         self.choose_starting_player()
@@ -222,8 +225,3 @@ class Game:
                 self.bet.update(self.current_player.make_bet(self.bet))
                 print(f"{self.current_player.name}'s bid is: {self.bet['dice_count']} X {self.bet['dice_value']}")
                 self.choose_next_player()
-
-
-# if __name__ == "__main__":
-    # my_game = Game()
-    # my_game.play_game()

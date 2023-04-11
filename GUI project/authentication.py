@@ -1,10 +1,11 @@
 from tkinter import Entry, Button
+from activating import activate_wild
 from canvas import root, frame
 from helpers import clean_screen
-from gui_game import Game
 
 
-def render_entry():
+def add_player():
+    clean_screen()
     entry_button = Button(
         root,
         text="Start Game",
@@ -27,12 +28,5 @@ human_player_name_box = Entry(root)
 number_computer_players_box = Entry(root)
 
 
-
-
-game = Game()
-
-
 def start_game():
-    game.add_players()
-
-
+    activate_wild()
